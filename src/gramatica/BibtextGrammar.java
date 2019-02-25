@@ -155,14 +155,6 @@ public class BibtextGrammar implements BibtextGrammarConstants {
     }
   }
 
-/*
-void a() :
-{}
-{
-  < LB > < ID >
-  (    art()
-	)
-}*/
   final public void number() throws ParseException {
     jj_consume_token(NUMBER);
     jj_consume_token(57);

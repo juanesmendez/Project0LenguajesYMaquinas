@@ -86,7 +86,7 @@ public class Interfaz {
 		System.out.println("1. Mostrar conteo de entradas bibliografias en el archivo.");
 		System.out.println("2. Mostrar conteo de bibliografias válidas en el archivo.");
 		System.out.println("3. Mostrar datos de errores identificados.");
-		System.out.println("4. ");
+		System.out.println("4. Análisis de campos requeridos y campos opcionales.");
 		System.out.println("5. Volver.");
 	}
 	

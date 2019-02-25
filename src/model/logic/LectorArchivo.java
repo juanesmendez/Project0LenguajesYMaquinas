@@ -11,6 +11,21 @@ import java.util.Iterator;
 import java.util.List;
 
 import gramatica.BibtextGrammar;
+import model.world.Article;
+import model.world.Bibliography;
+import model.world.Book;
+import model.world.Booklet;
+import model.world.Conference;
+import model.world.Inbook;
+import model.world.Incollection;
+import model.world.Inproceedings;
+import model.world.Manual;
+import model.world.MastersThesis;
+import model.world.Misc;
+import model.world.PhdThesis;
+import model.world.Proceedings;
+import model.world.TechReport;
+import model.world.Unpublished;
 
 
 public class LectorArchivo {
@@ -31,9 +46,12 @@ public class LectorArchivo {
 	public final String UNPUBLISHED = "unpublished";
 
 	private ArrayList<String> listBibliographies;
+	private ArrayList<String> listBibliographiesWithTabs;
 	private int successes;
 	private int lexicErrors;
 	private int sintaxErrors;
+	
+	private ArrayList<Bibliography> bibliographiesInfo;
 
 	private int totalArticles;
 	private int totalBooks;
@@ -49,9 +67,12 @@ public class LectorArchivo {
 	private int totalProceedings;
 	private int totalTechReports;
 	private int totalUnPublished;
+	private String requiredAndOptionalAnalysis;
 
 	public LectorArchivo() {
 		listBibliographies = null;
+		listBibliographiesWithTabs = null;
+		bibliographiesInfo = null;
 		successes = 0;
 		lexicErrors = 0;
 		sintaxErrors = 0;
@@ -85,6 +106,7 @@ public class LectorArchivo {
 
 			String line = "";
 			String completeFile = "";
+			String completeFileBackup = "";
 			String type = "";
 
 			while( (line = buffer.readLine()) != null) {
@@ -96,7 +118,7 @@ public class LectorArchivo {
 					countTotalBibliographyTypes(type);
 				}
 			}
-
+			completeFileBackup = completeFile;
 			completeFile = deleteTabs(completeFile);
 			completeFile = deleteJumpLine(completeFile);
 			//System.out.println(completeFile);
@@ -113,6 +135,16 @@ public class LectorArchivo {
 			// manipular la lista para encontrar los datos
 			countValidBibliographies();
 			
+			
+			// aca manipulo lo que sera utilizado para analizar campos requeridos y opcionales
+			array = completeFileBackup.split("@");
+			this.listBibliographiesWithTabs = new ArrayList<>(Arrays.asList(array));
+			if(listBibliographiesWithTabs.get(0).equals("")) {
+				listBibliographiesWithTabs.remove(0);	
+			}
+			for(int i=0; i<listBibliographiesWithTabs.size();i++) {
+				listBibliographiesWithTabs.set(i, "@" + listBibliographiesWithTabs.get(i)); 
+			}
 
 			System.out.println("---------------------------------------------------------------------------------------------------");
 		} catch (FileNotFoundException e) {
@@ -127,7 +159,6 @@ public class LectorArchivo {
 	}
 
 	private void countValidBibliographies() {
-		// TODO Auto-generated method stub
 		BibtextGrammar grammar;
 		for(String s: this.listBibliographies) {
 			grammar = new BibtextGrammar(System.in);
@@ -155,12 +186,12 @@ public class LectorArchivo {
 
 
 	private static String deleteJumpLine(String completeFile) {
-		String nuevo = completeFile.replace("\t", "");
+		String nuevo = completeFile.replace("\n", "");
 		return nuevo;
 	}
 
 	private static String deleteTabs(String completeFile) {
-		String nuevo = completeFile.replace("\n", ""); 
+		String nuevo = completeFile.replace("\t", " "); 
 		return nuevo;
 	}
 
@@ -213,12 +244,168 @@ public class LectorArchivo {
 		default:
 			break;
 		}
-
-		
-		
-
 	}
 
+	private void checkRequiredAndOptional() {
+		String array[];
+		String info = "";
+		for(String s:this.listBibliographiesWithTabs) {
+			array = s.split("\n");
+			ArrayList<String> lineas = new ArrayList<>(Arrays.asList(array));
+			
+			String[] aux = lineas.get(0).split("{");
+			String type = aux[0].substring(1); // agarro el tipo de bibliografia que es
+			lineas.remove(0); // remuevo la linea que tiene el @ y el id
+			
+			info = "";
+			for (String string : lineas) {
+				info += string;
+			}
+			switch (type) {
+
+			case ARTICLE:
+
+				Article article = new Article(info);
+				bibliographiesInfo.add(article);
+				article.checkFields();
+				article.buildCheckFieldString();
+				requiredAndOptionalAnalysis += article.getFieldCheckInfo();
+
+				
+				
+				break;
+
+			case BOOK:
+				Book book = new Book(info);
+				bibliographiesInfo.add(book);
+				book.checkFields();
+				book.buildCheckFieldString();
+				requiredAndOptionalAnalysis += book.getFieldCheckInfo();
+
+
+				break;
+
+			case BOOKLET:
+
+				Booklet booklet = new Booklet(info);
+				bibliographiesInfo.add(booklet);
+				booklet.checkFields();
+				booklet.buildCheckFieldString();
+				requiredAndOptionalAnalysis += booklet.getFieldCheckInfo();
+
+				break;
+
+			case CONFERENCE:
+
+				Conference conference = new Conference(info);
+				bibliographiesInfo.add(conference);
+				conference.checkFields();
+				conference.buildCheckFieldString();
+				requiredAndOptionalAnalysis += conference.getFieldCheckInfo();
+
+				break;
+			case INBOOK:
+
+				Inbook inbook = new Inbook(info);
+				bibliographiesInfo.add(inbook);
+				inbook.checkFields();
+				inbook.buildCheckFieldString();
+				requiredAndOptionalAnalysis += inbook.getFieldCheckInfo();
+
+				break;
+			case INCOLLECTION:
+
+				Incollection incollection = new Incollection(info);
+				bibliographiesInfo.add(incollection);
+				incollection.checkFields();
+				incollection.buildCheckFieldString();
+				requiredAndOptionalAnalysis += incollection.getFieldCheckInfo();
+
+				break;
+			case INPROCEEDING:
+
+				Inproceedings inproceeding = new Inproceedings(info);
+				bibliographiesInfo.add(inproceeding);
+				inproceeding.checkFields();
+				inproceeding.buildCheckFieldString();
+				requiredAndOptionalAnalysis += inproceeding.getFieldCheckInfo();
+
+				break;
+
+			case MANUAL:
+
+				Manual manual= new Manual(info);
+				bibliographiesInfo.add(manual);
+				manual.checkFields();
+				manual.buildCheckFieldString();
+				requiredAndOptionalAnalysis += manual.getFieldCheckInfo();
+
+				break;
+			case MASTERSTHESIS:
+
+				MastersThesis masters = new MastersThesis(info);
+				bibliographiesInfo.add(masters);
+				masters.checkFields();
+				masters.buildCheckFieldString();
+				requiredAndOptionalAnalysis += masters.getFieldCheckInfo();
+
+				break;
+			case MISC:
+
+				Misc misc = new Misc(info);
+				bibliographiesInfo.add(misc);
+				misc.checkFields();
+				misc.buildCheckFieldString();
+				requiredAndOptionalAnalysis += misc.getFieldCheckInfo();
+
+				break;
+			case PHDTHESIS:
+
+				PhdThesis phd = new PhdThesis(info);
+				bibliographiesInfo.add(phd);
+				phd.checkFields();
+				phd.buildCheckFieldString();
+				requiredAndOptionalAnalysis += phd.getFieldCheckInfo();
+
+				break;
+			case PROCEEDINGS:
+
+				Proceedings proceedings= new Proceedings(info);
+				bibliographiesInfo.add(proceedings);
+				proceedings.checkFields();
+				proceedings.buildCheckFieldString();
+				requiredAndOptionalAnalysis += proceedings.getFieldCheckInfo();
+
+				break;
+			case TECHREPORT:
+
+				TechReport techReport= new TechReport(info);
+				bibliographiesInfo.add(techReport);
+				techReport.checkFields();
+				techReport.buildCheckFieldString();
+				requiredAndOptionalAnalysis += techReport.getFieldCheckInfo();
+
+				break;
+			case UNPUBLISHED:
+
+				Unpublished unpublished = new Unpublished(info);
+				bibliographiesInfo.add(unpublished);
+				unpublished.checkFields();
+				unpublished.buildCheckFieldString();
+				requiredAndOptionalAnalysis += unpublished.getFieldCheckInfo();
+
+				break;
+
+			default:
+				break;
+			}
+			
+		}
+		
+
+		
+	}
+	
 
 	public void printConteoBibliografias() {
 		

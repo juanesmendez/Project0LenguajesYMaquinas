@@ -83,14 +83,7 @@ void e() :
  	
   )
   //a()
-}/*
-void a() :
-{}
-{
-  < LB > < ID >
-  (    art()
-	)
-}*/
+}
 
 void number() :
 {}
