@@ -45,9 +45,12 @@ public class Interfaz {
 							Controller.mostrarErrores();
 							break;
 						case 4:
-							
+							Controller.mostrarErroresPorEntrada();
 							break;
 						case 5:
+							Controller.mostrarAnalisisCamposReqYOpc();
+							break;
+						case 6:
 							segundoFin= true;
 							//sc.close();
 							break;
@@ -75,9 +78,9 @@ public class Interfaz {
 		// TODO Auto-generated method stub
 		System.out.println("---------------LENGUAJES Y MAQUINAS-----------------");
 		System.out.println("----------------Lector Archivos Bib-----------------");
-		System.out.println("---------------------Project 0----------------------");
+		System.out.println("---------------------Project 1----------------------");
 		System.out.println();
-		System.out.println("1. Leer archivo.");
+		System.out.println("1. Leer archivo. (Muestra errores detectados por JavaCC)");
 		System.out.println("2. Salir.");
 
 	}
@@ -85,9 +88,10 @@ public class Interfaz {
 	private static void printSubMenu() {
 		System.out.println("1. Mostrar conteo de entradas bibliografias en el archivo.");
 		System.out.println("2. Mostrar conteo de bibliografias válidas en el archivo.");
-		System.out.println("3. Mostrar datos de errores identificados.");
-		System.out.println("4. Análisis de campos requeridos y campos opcionales.");
-		System.out.println("5. Volver.");
+		System.out.println("3. Mostrar datos generales de errores identificados en el archivo.");
+		System.out.println("4. Mostrar datos del tipo de error (si aplica) identificado en cada entrada bibliográfica en el archivo.");
+		System.out.println("5. Análisis de campos requeridos y campos opcionales.");
+		System.out.println("6. Volver.");
 	}
 	
 	

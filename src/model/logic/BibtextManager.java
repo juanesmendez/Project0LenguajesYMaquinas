@@ -23,7 +23,7 @@ public class BibtextManager implements IBibtextManager{
 	}
 	
 	public void mostrarAnalisisCamposReqYOpc() {
-		//lector.printRequiredAndOptionalAnalysis();
+		lector.printRequiredAndOptionalAnalysis();
 	}
 	
 	public void mostrarErrores() {
@@ -39,5 +39,11 @@ public class BibtextManager implements IBibtextManager{
 	@Override
 	public void mostrarConteoBibliografiasValidas() {
 		lector.printValidBibliographies();
+	}
+
+	@Override
+	public void mostrarErroresPorEntrada() {
+		lector.printErrorsPerEntry();
+		
 	}
 }

@@ -52,6 +52,8 @@ public class LectorArchivo {
 	private int sintaxErrors;
 	
 	private ArrayList<Bibliography> bibliographiesInfo;
+	
+	private char[] errorPerEntryInfo;
 
 	private int totalArticles;
 	private int totalBooks;
@@ -72,7 +74,7 @@ public class LectorArchivo {
 	public LectorArchivo() {
 		listBibliographies = null;
 		listBibliographiesWithTabs = null;
-		bibliographiesInfo = null;
+		bibliographiesInfo = new ArrayList<Bibliography>();
 		successes = 0;
 		lexicErrors = 0;
 		sintaxErrors = 0;
@@ -91,6 +93,8 @@ public class LectorArchivo {
 		totalProceedings = 0;
 		totalTechReports = 0;
 		totalUnPublished = 0;
+		
+		requiredAndOptionalAnalysis = "";
 		
 	}
 
@@ -111,6 +115,7 @@ public class LectorArchivo {
 
 			while( (line = buffer.readLine()) != null) {
 				completeFile += line;
+				completeFileBackup += (line + "\n"); 
 				if(line.startsWith("@")) {
 					String array[] = line.split("\\{");
 					type = array[0].substring(1);
@@ -118,7 +123,6 @@ public class LectorArchivo {
 					countTotalBibliographyTypes(type);
 				}
 			}
-			completeFileBackup = completeFile;
 			completeFile = deleteTabs(completeFile);
 			completeFile = deleteJumpLine(completeFile);
 			//System.out.println(completeFile);
@@ -130,7 +134,7 @@ public class LectorArchivo {
 			}
 			for(int i=0; i<listBibliographies.size();i++) {
 				listBibliographies.set(i, "@" + listBibliographies.get(i)); 
-				System.out.println(listBibliographies.get(i));
+				//System.out.println(listBibliographies.get(i));
 			}
 			// manipular la lista para encontrar los datos
 			countValidBibliographies();
@@ -160,6 +164,11 @@ public class LectorArchivo {
 
 	private void countValidBibliographies() {
 		BibtextGrammar grammar;
+		int i = 0;
+		
+		// declaro el arreglo que mapeara la información sobre los tipos de error de cada entrada
+		this.errorPerEntryInfo = new char[this.listBibliographies.size()]; 
+		
 		for(String s: this.listBibliographies) {
 			grammar = new BibtextGrammar(System.in);
 			grammar.ReInit(new java.io.StringReader(s));
@@ -168,16 +177,21 @@ public class LectorArchivo {
 				int val = grammar.one_line();
 				resp = new String("Yei " + val + "\n");
 				successes++;
+				errorPerEntryInfo[i] = '0'; // 0 para ningun error
 				System.out.println(resp);
 			}catch(Exception e) {
 				resp = new String ("Error de sintaxis: " + e.getMessage());
 				System.out.println(resp);
 				sintaxErrors++;
+				errorPerEntryInfo[i] = 's'; // s para error de sintaxis
 			}catch(Error e) {
 				resp = new String ("Error Lexico: "+e.getMessage());
 				System.out.println(resp);
+				System.out.println();
 				lexicErrors++;
+				errorPerEntryInfo[i] = 'l'; // l para error léxico
 			}
+			i++;
 		}
 
 		System.out.println("SUCCESSES: " + successes);
@@ -249,11 +263,13 @@ public class LectorArchivo {
 	private void checkRequiredAndOptional() {
 		String array[];
 		String info = "";
+		System.out.println("TAMAÑO LISTA:" + listBibliographiesWithTabs.size());
 		for(String s:this.listBibliographiesWithTabs) {
 			array = s.split("\n");
+			System.out.println("S: "+s);
 			ArrayList<String> lineas = new ArrayList<>(Arrays.asList(array));
-			
-			String[] aux = lineas.get(0).split("{");
+			System.out.println("TAMAÑO LISTA LINEASSSS:" + lineas.size());
+			String[] aux = lineas.get(0).split("\\{");
 			String type = aux[0].substring(1); // agarro el tipo de bibliografia que es
 			lineas.remove(0); // remuevo la linea que tiene el @ y el id
 			
@@ -261,6 +277,7 @@ public class LectorArchivo {
 			for (String string : lineas) {
 				info += string;
 			}
+			System.out.println("INFO: "+ info);
 			switch (type) {
 
 			case ARTICLE:
@@ -454,7 +471,32 @@ public class LectorArchivo {
 		System.out.println("\t Errores de sintáxis: " + sintaxErrors);
 		
 		System.out.println("---------------------------------------------------------------------------------------------------");
+	}
 	
+	public void printRequiredAndOptionalAnalysis() {
+		this.checkRequiredAndOptional();
+		System.out.println();
+		System.out.println("---------------------------------------------------------------------------------------------------");
+		System.out.println(this.requiredAndOptionalAnalysis);
+		System.out.println("---------------------------------------------------------------------------------------------------");
+		System.out.println();
+	}
+
+
+	public void printErrorsPerEntry() {
+		System.out.println("---------------------------------------------------------------------------------------------------");
+		System.out.println("TIPOS DE ERROR IDENTIFICADOS POR ENTRADA (Java CC): ");
+		System.out.println();
+		for(int i=0; i<this.errorPerEntryInfo.length;i++) {
+			if(errorPerEntryInfo[i] == '0') {
+				System.out.println("# " + (i+1) + ": " + "N/A");
+			}else if(errorPerEntryInfo[i] == 's') {
+				System.out.println("# " + (i+1) + ": " + "Error de sintáxis");
+			}else if(errorPerEntryInfo[i] == 'l') {
+				System.out.println("# " + (i+1) + ": " + "Error léxico");
+			}
+		}
+		System.out.println("---------------------------------------------------------------------------------------------------");
 		
 	}
 }

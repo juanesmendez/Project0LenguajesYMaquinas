@@ -33,4 +33,9 @@ public class Controller {
 		manager.mostrarConteoBibliografiasValidas();
 		
 	}
+
+	public static void mostrarErroresPorEntrada() {
+		manager.mostrarErroresPorEntrada();
+		
+	}
 }

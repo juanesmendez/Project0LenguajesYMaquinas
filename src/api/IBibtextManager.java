@@ -14,4 +14,6 @@ public interface IBibtextManager {
 	public void mostrarConteoBibliografias();
 
 	public void mostrarConteoBibliografiasValidas();
+
+	public void mostrarErroresPorEntrada();
 }
