@@ -1,0 +1,604 @@
+/**
+ * JavaCC template file created by SF JavaCC plugin 1.5.28+ wizard for JavaCC 1.5.0+
+ */options{  static = false;}PARSER_BEGIN(BibtextGrammar)package gramatica;
+
+public class BibtextGrammar{
+  public static void main(String args []) throws ParseException  {    BibtextGrammar parser = new BibtextGrammar(System.in);    while (true)    {      System.out.println("Reading from standard input...");      System.out.print("Enter an expression like \"1+(2+3)*4;\" :");      try      {        switch (parser.one_line())        {          case 0 :           System.out.println("OK.");          break;          case 1 :           System.out.println("Goodbye.");          break;          default :           break;        }      }      catch (Exception e)      {        System.out.println("NOK.");        System.out.println(e.getMessage());        break;
+      }      catch (Error e)      {        System.out.println("Oops.");        System.out.println(e.getMessage());        break;      }    }  }}PARSER_END(BibtextGrammar)SKIP :{  " "| "\r"| "\t"| "\n"}TOKEN : {
+
+  < LB : "{" >
+| < RB : "}" >  
+| < ARTICLE : "article" >
+| < BOOK  : "book" >
+| < BOOKLET : "booklet" >
+| < CONFERENCE  : "conference" >
+| < INBOOK : "inbook" >
+| < INCOLLECTION : "incollection" >
+| < INPROCEEDINGS : "inproceedings" >
+| < MANUAL : "manual" >
+| < MASTERSTHESIS :"mastersthesis" >
+| < MISC : "misc" >
+| < PHDTHESIS : "phdthesis">
+| < PROCEEDINGS : "proceedings" >
+| < TECHREPORT : "techreport" >
+| < UNPUBLISHED : "unpublished" >
+
+
+| < AUTHOR : "Author" >
+| < JOURNAL : "Journal" >
+| < TITLE : "Title" >
+| < YEAR : "Year" >
+| < MONTH : "Month" >
+| < NUMBER : "Number" >
+| < PAGES : "Pages" >
+| < VOLUME : "Volume" >
+| < PUBLISHER : "Publisher" >
+| < DOI : "Doi" >
+| < NOTE : "Note" >
+| < KEY : "Key" >
+| < EDITOR : "Editor" >
+| < SERIES : "Series" >
+| < ADDRESS : "Address" >
+| < EDITION : "Edition" >
+| < URL : "Url" >
+| < HOWPUBLISHED : "Howpublished" >
+| < CHAPTER : "Chapter" >
+| < BOOKTITLE : "Booktitle" >
+| < TYPE : "Type" >
+| < ORGANIZATION : "Organization" >
+| < SCHOOL : "School" >
+| < INSTITUTION : "Institution" >
+//| < FIELDVALUE :  "{"(~["\n","\r"])+ "}"  >}TOKEN :{
+
+  < WORD : (< LETTER >)+ >
+| < CONSTANT : (< DIGIT >)+ >
+| < ID : (< LETTERSNUMBERS > | "+")+ >
+
+| < #LETTERSNUMBERS : (< LOWER > | < UPPER > | < DIGIT >)>
+| < #LETTER: (< LOWER > | < UPPER >)>
+| < #LOWER : [ "a"-"z" ] >
+| < #UPPER : [ "A"-"Z" ] >| < #DIGIT : [ "0"-"9" ] >
+| < #COMMA : [ "," ] >
+| < #SEMICOLON : [ ":" ] >
+| < #DASH : [ "-"] >
+}int one_line() :{}{  symbol() "}"  {    return 0;  }| "}"  {    return 1;  }}void symbol() :{}{  "@" e()}
+
+void e() :
+{}
+{
+  (    < ARTICLE > < LB > < ID > art()
+    |< BOOK > < LB > < ID > book() 
+ 	|< BOOKLET > < LB > < ID > booklet()
+ 	|< CONFERENCE > < LB > < ID > conference()
+ 	|< INBOOK >  < LB > < ID > inbook()
+ 	|< INCOLLECTION > < LB > < ID > incollection()
+ 	|< INPROCEEDINGS > < LB > < ID > inproceedings()
+ 	|< MANUAL > < LB > < ID > manual()
+ 	|< MASTERSTHESIS > < LB > < ID > mastersthesis()
+ 	|< MISC > < LB > < ID > misc()
+ 	|< PHDTHESIS > < LB > < ID > phdthesis()
+ 	|< PROCEEDINGS > < LB > < ID > proceedings()
+ 	|< TECHREPORT > < LB > < ID > techreport()
+ 	|< UNPUBLISHED > < LB > < ID > unpublished()
+ 	
+  )
+  //a()
+}/*
+void a() :
+{}
+{
+  < LB > < ID >
+  (    art()
+	)
+}*/
+
+void number() :
+{}
+{
+  < NUMBER > "=" < LB > [< WORD > "-"] < CONSTANT > < RB >
+}
+
+
+void pages() :
+{}
+{
+  < PAGES > "=" < LB > < CONSTANT > [("-")+ < CONSTANT >] < RB >
+}
+
+
+void month() :
+{}
+{
+  < MONTH > "=" < LB > < WORD > < RB >
+}
+
+void doi() :
+{}
+{
+  < DOI > "=" < LB > (< CONSTANT >|".")* < RB > // chequear la definicion de DOI
+}
+
+void note() :
+{}
+{
+  < NOTE > "=" < LB > (< WORD >)+ < RB >
+}
+
+void author() :
+{}
+{
+  < AUTHOR > "=" < LB > (< WORD > [ "." | "," | "'"] )+ <RB >
+}
+
+void title() :
+{}
+{
+  < TITLE > "=" < LB > (< WORD > ["-"|","|":"])+ < RB > //revisar eso
+}
+
+void journal() :
+{}
+{
+  < JOURNAL > "=" < LB > (( < WORD >|< JOURNAL > ) ["." | "-"])+ < RB >
+}
+
+void year() :
+{}
+{
+  < YEAR > "=" < LB > < CONSTANT > < RB >  
+}
+
+void volume() :
+{}
+{
+  < VOLUME > "=" < LB > < CONSTANT >  < RB >  
+}
+
+void editor() :
+{}
+{
+  < EDITOR > "=" < LB > (< WORD > ["."|","] )+ < RB >  
+}
+
+void publisher() :
+{}
+{
+  < PUBLISHER > "=" < LB > (< WORD > ["-"])+ < RB >  
+}
+
+void series() :
+{}
+{
+  < SERIES > "=" < LB > (< WORD >| "'" | < CONSTANT >)+ < RB >  
+}
+void address() :
+{}
+{
+  < ADDRESS > "=" < LB > (< WORD > | < CONSTANT > | "," )+ < RB >  
+}
+
+void edition() :
+{}
+{
+  < EDITION > "=" < LB > < CONSTANT >  < RB >  
+}
+
+void key() :
+{}
+{
+  < KEY > "=" < LB > < CONSTANT >  < RB >  
+}
+
+void url() :
+{}
+{
+  < URL > "=" < LB > (< WORD >|< CONSTANT >|"/"|":")+  < RB >  
+}
+
+void howpublished() :
+{}
+{
+  < HOWPUBLISHED > "=" < LB > (< WORD >)+  < RB >  
+}
+
+void booktitle() :
+{}
+{
+  < BOOKTITLE > "=" < LB > (< WORD > [<ID > | "," | "-" | ":" | < CONSTANT > | < CONFERENCE >])+ < RB >   
+}
+
+void organization() :
+{}
+{
+  < ORGANIZATION > "=" < LB > (< WORD > ["."|","])+ < RB >   
+}
+
+void chapter() :
+{}
+{
+  < CHAPTER > "=" < LB > (< CONSTANT > ["-"])+ < RB >   
+}
+
+void type() :
+{}
+{
+  < TYPE > "=" < LB > (< WORD >)+ < RB >   
+}
+
+void school() :
+{}
+{
+  < SCHOOL > "=" < LB > (< WORD > ["," | "." | "-"])+ < RB >   
+}
+
+void institution() :
+{}
+{
+  < INSTITUTION > "=" < LB > (< WORD > ["," | "." | "-"])+ < RB >   
+}
+
+void art() :
+{}
+{
+  // optional attributes
+  
+
+   (
+     ","
+    (           author()
+	| title()
+	| journal()
+	| year()
+	| volume()
+	//opcionales
+	| number()
+  	| pages()
+  	| month()
+  	| doi()
+  	| note()))+
+
+    //< RB >
+
+}
+
+void book() :
+{}
+{
+  // optional attributes
+  
+
+
+   (
+     ","
+    (
+      
+     author()
+   | editor() // opcional
+   | title()
+   | publisher()
+   | year()
+	
+	//opcionales
+	| volume()
+	| number()
+	| series()
+	| address()
+	| edition()
+	| month()
+	| note()
+	| key()
+	| url()
+	))+
+
+    //< RB >
+
+}
+
+void booklet() :
+{}
+{
+  // optional attributes
+  
+
+
+   (
+     ","
+    (
+      title()
+   
+	
+	//opcionales
+	| author()
+	| howpublished()
+	| address()
+	| month()
+	| year()
+	| note()
+	| key()
+	))+
+
+    //< RB >
+
+}
+
+void conference() :
+{}
+{
+  // optional attributes
+  
+
+
+   (
+     ","
+    (
+      author()
+   | title()
+   | booktitle()
+   | year() 
+	
+	//opcionales
+	| editor()
+	| volume()
+	| number()
+	| series()
+	| pages()
+	| address()
+	| month()
+	| organization()
+	| publisher()
+	| note()
+	| key()
+	))+
+
+    //< RB >
+
+}
+
+void inbook() :
+{}
+{
+  // optional attributes
+  
+
+
+   (
+     ","
+    (
+      author()
+    | editor()
+    | title()
+    | chapter()
+    | pages()
+    | publisher()
+    | year()
+    
+   
+	
+	//opcionales
+	| volume()
+	| number()
+	| series()
+	| type()
+	| address()
+	| edition()
+	| month()
+	| note()
+	| key()
+	))+
+
+    //< RB >
+
+}
+
+void incollection() :
+{}
+{
+   (
+     ","
+    (
+      author()
+  	| title()
+  	| booktitle()
+  	| publisher()
+  	| year()
+  	
+   
+	
+	//opcionales
+	| editor()
+	| volume()
+	| number()
+	| series()
+	| type()
+	| chapter()
+	| pages()
+	| address()
+	| edition()
+	| month()
+	| note()
+	| key()
+	))+
+
+    //< RB >
+
+}
+
+void inproceedings() :
+{}
+{
+   (
+     ","
+    (
+      author()
+  	| title()
+  	| booktitle()
+  	| year()
+  	
+   
+	
+	//opcionales
+	| editor()
+	| volume()
+	| number()
+	| series()
+	| pages()
+	| address()
+	| month()
+	| organization()
+	| publisher()
+	| note()
+	| key()
+	))+
+
+    //< RB >
+
+}
+
+void manual() :
+{}
+{
+   (
+     ","
+    (
+      title()
+  	
+   
+	
+	//opcionales
+	| author()
+	| organization()
+	| address()
+	| edition()
+	| month()
+	| year()
+	| note()
+	| key()
+	))+
+
+    //< RB >
+
+}
+
+void mastersthesis() :
+{}
+{
+   (
+     ","
+    (
+      author()
+  	| title()
+  	| school()
+  	| year()
+  	
+   
+	
+	//opcionales
+	| type()
+	| address()
+	| month()
+	| note()
+	| key()
+	))+
+
+    //< RB >
+
+}
+
+void misc() :
+{}
+{
+  (
+     ","
+    (
+	
+	//opcionales
+	author()
+	| title()
+	| howpublished()
+	| month()
+	| year()
+	| note()
+	| key()
+	))+
+}
+
+void phdthesis() :
+{}
+{
+  (
+     ","
+    (
+      author()
+  	| title()
+  	| school()
+  	| year()
+	
+	//opcionales
+	| type()
+	| address()
+	| month()
+	| note()
+	| key()
+	))+
+}
+
+void proceedings() :
+{}
+{
+  (
+     ","
+    (
+      title()
+  	| year()
+	
+	//opcionales
+	| editor()
+	| volume()
+	| number()
+	| series()
+	| address()
+	| month()
+	| publisher()
+	| organization()
+	| note()
+	| key()
+	))+
+}
+
+void techreport() :
+{}
+{
+  (
+     ","
+    (
+      author()
+  	| title()
+  	| institution()
+  	| year()
+	
+	//opcionales
+	| type()
+	| number()
+	| address()
+	| month()
+	| note()
+	| key()
+	))+
+}
+
+void unpublished() :
+{}
+{
+  (
+     ","
+    (
+      author()
+  	| title()
+  	| note()
+	
+	//opcionales
+	| month()
+	| year()
+	| key()
+	))+
+}
